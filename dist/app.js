@@ -8,13 +8,19 @@ require("dotenv/config");
 const cors_1 = __importDefault(require("cors"));
 const user_js_1 = __importDefault(require("./routes/user.js"));
 const features_js_1 = require("./utils/features.js");
+const error_js_1 = require("./middlewares/error.js");
 const port = process.env.PORT || 3000;
+//database connection
 (0, features_js_1.connectDB)();
 const app = (0, express_1.default)();
+// Middleware to parse JSON request bodies
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 //routes
 app.use("/api/v1/user", user_js_1.default);
+//error middleware
+app.use(error_js_1.errorMiddleware);
+//server connection
 app.listen(port, () => {
     console.log(`Port is listening at http://localhost:${port}`);
 });
