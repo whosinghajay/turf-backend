@@ -7,7 +7,7 @@ export type NewUserRequestBody = {
 };
 
 export type ControllerType = (
-  req: Request<{}, {}, NewUserRequestBody>,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => Promise<void | Response<any, Record<string, any>>>;

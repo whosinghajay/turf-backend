@@ -1,8 +1,11 @@
 import express from "express";
-import { otpVerification } from "../controllers/user";
+import { deleteUser, getAllUser, getUser, user } from "../controllers/user";
 
 const app = express.Router();
 
-app.post("/otp", otpVerification);
+app.post("/", user);
+app.get("/all", getAllUser);
+app.get("/:id", getUser);
+app.delete("/:id", deleteUser);
 
 export default app;

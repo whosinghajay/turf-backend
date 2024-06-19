@@ -12,6 +12,7 @@ err, req, res, next) => {
     });
 };
 exports.errorMiddleware = errorMiddleware;
+//trycatch wrapper
 const TryCatch = (func) => (req, res, next) => {
     return Promise.resolve(func(req, res, next)).catch(next);
 };

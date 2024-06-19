@@ -18,6 +18,7 @@ export const errorMiddleware = (
   });
 };
 
+//trycatch wrapper
 export const TryCatch =
   (func: ControllerType) =>
   (req: Request, res: Response, next: NextFunction) => {
