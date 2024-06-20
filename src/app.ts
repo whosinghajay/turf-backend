@@ -3,6 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 
 import user from "./routes/user.js";
+import turf from "./routes/turf.js";
 import { connectDB } from "./utils/features.js";
 import { errorMiddleware } from "./middlewares/error.js";
 
@@ -20,6 +21,7 @@ app.use(cors());
 
 //routes
 app.use("/api/v1/user", user);
+app.use("/api/v1/turf", turf);
 
 //error middleware
 app.use(errorMiddleware);
