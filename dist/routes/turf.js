@@ -8,4 +8,5 @@ const turf_1 = require("../controllers/turf");
 const app = express_1.default.Router();
 app.post("/", turf_1.turfCreate);
 app.delete("/:id", turf_1.deleteTurf);
+app.put("/:id", turf_1.updateTurf);
 exports.default = app;
