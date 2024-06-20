@@ -9,7 +9,7 @@ const user_1 = require("../modals/user");
 const utility_class_1 = __importDefault(require("../utils/utility-class"));
 exports.user = (0, error_1.TryCatch)(async (req, res, next) => {
     // throw new Error(); //to throw error and moves to catch block
-    const { phoneNumber, gender, fullName } = req.body;
+    const { phoneNumber, gender, fullName, location, role } = req.body;
     //finding user using phone number
     let user = await user_1.User.findOne({ phoneNumber });
     //if user already there
@@ -20,11 +20,11 @@ exports.user = (0, error_1.TryCatch)(async (req, res, next) => {
         });
     }
     //empty field error
-    if (!phoneNumber || !gender || !fullName) {
+    if (!phoneNumber || !gender || !fullName || !location || !role) {
         return next(new utility_class_1.default("Please add all fields", 400));
     }
     //creating user
-    user = await user_1.User.create({ phoneNumber, gender, fullName });
+    user = await user_1.User.create({ phoneNumber, gender, fullName, location, role });
     return res.status(201).json({
         success: true,
         message: `Welcome, ${user?.fullName}`,

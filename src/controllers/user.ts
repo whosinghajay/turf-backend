@@ -11,7 +11,7 @@ export const user = TryCatch(
     next: NextFunction
   ) => {
     // throw new Error(); //to throw error and moves to catch block
-    const { phoneNumber, gender, fullName } = req.body;
+    const { phoneNumber, gender, fullName, location, role } = req.body;
 
     //finding user using phone number
     let user = await User.findOne({ phoneNumber });
@@ -25,12 +25,12 @@ export const user = TryCatch(
     }
 
     //empty field error
-    if (!phoneNumber || !gender || !fullName) {
+    if (!phoneNumber || !gender || !fullName || !location || !role) {
       return next(new ErrorHandler("Please add all fields", 400));
     }
 
     //creating user
-    user = await User.create({ phoneNumber, gender, fullName });
+    user = await User.create({ phoneNumber, gender, fullName, location, role });
 
     return res.status(201).json({
       success: true,

@@ -23,36 +23,45 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Turf = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const userSchema = new mongoose_1.default.Schema({
-    phoneNumber: {
+const turfSchema = new mongoose_1.default.Schema({
+    image: {
+        type: String,
+        required: [true, "Please provide turf image"],
+    },
+    turfName: {
+        type: String,
+        required: [true, "Please provide us your turf name"],
+    },
+    turfLocation: {
+        type: String,
+        required: [true, "Please provide us your turf location"],
+    },
+    rating: {
         type: Number,
-        required: [true, "Please entere the Phone Number"],
     },
-    gender: {
+    comments: {
+        type: [String],
+    },
+    services: {
         type: String,
-        enum: ["male", "female"],
-        required: [true, "Please enter the gender"],
+        required: [true, "Mention the serives"],
     },
-    fullName: {
-        type: String,
-        required: [true, "Please enter your full name"],
+    courtNumbers: {
+        type: Number,
+        required: [true, "Provide us the number of court you have"],
     },
-    location: {
-        type: String,
-        required: [true, "Please provide location of yours"],
-    },
-    favorite: {
+    slot: {
         type: [mongoose_1.Schema.Types.Mixed],
     },
-    booking: {
-        type: [mongoose_1.Schema.Types.Mixed],
+    price: {
+        type: Number,
+        required: [true, "Provide us the price of the turf"],
     },
-    role: {
+    typeOfCourt: {
         type: String,
-        enum: ["user", "turfPoster", "admin"],
-        required: [true, "Please provide your role"],
+        required: [true, "Enter the type of court"],
     },
 }, { timestamps: true });
-exports.User = mongoose_1.default.model("User", userSchema);
+exports.Turf = mongoose_1.default.model("Turf", turfSchema);

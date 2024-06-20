@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -14,6 +14,21 @@ const userSchema = new mongoose.Schema(
     fullName: {
       type: String,
       required: [true, "Please enter your full name"],
+    },
+    location: {
+      type: String,
+      required: [true, "Please provide location of yours"],
+    },
+    favorite: {
+      type: [Schema.Types.Mixed],
+    },
+    booking: {
+      type: [Schema.Types.Mixed],
+    },
+    role: {
+      type: String,
+      enum: ["user", "turfPoster", "admin"],
+      required: [true, "Please provide your role"],
     },
   },
   { timestamps: true }
