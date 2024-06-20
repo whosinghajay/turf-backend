@@ -7,4 +7,5 @@ const express_1 = __importDefault(require("express"));
 const turf_1 = require("../controllers/turf");
 const app = express_1.default.Router();
 app.post("/", turf_1.turfCreate);
+app.delete("/:id", turf_1.deleteTurf);
 exports.default = app;

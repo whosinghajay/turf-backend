@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.turfCreate = void 0;
+exports.deleteTurf = exports.turfCreate = void 0;
 const utility_class_1 = __importDefault(require("../utils/utility-class"));
 const turf_1 = require("../modals/turf");
 const turfCreate = async (req, res, next) => {
@@ -26,7 +26,6 @@ const turfCreate = async (req, res, next) => {
             price,
             typeOfCourt,
         });
-        console.log("hhhh");
         res.status(201).json({
             success: true,
             turf,
@@ -37,3 +36,17 @@ const turfCreate = async (req, res, next) => {
     }
 };
 exports.turfCreate = turfCreate;
+const deleteTurf = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const turf = await turf_1.Turf.findByIdAndDelete(id);
+        return res.status(200).json({
+            success: true,
+            message: `Turf ${turf?.turfName} deleted Successfully!`,
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.deleteTurf = deleteTurf;

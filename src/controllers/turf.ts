@@ -38,11 +38,29 @@ export const turfCreate = async (
       price,
       typeOfCourt,
     });
-    console.log("hhhh");
 
     res.status(201).json({
       success: true,
       turf,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteTurf = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const turf = await Turf.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: `Turf ${turf?.turfName} deleted Successfully!`,
     });
   } catch (error) {
     next(error);
