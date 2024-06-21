@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../utils/utility-class";
 import { Turf } from "../modals/turf";
+import { rm } from "fs";
 
-export const turfCreate = async (
+export const createTurf = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const {
-      image,
       turfName,
       turfLocation,
       services,
@@ -18,19 +18,26 @@ export const turfCreate = async (
       typeOfCourt,
     } = req.body;
 
+    const image = req.file;
+
+    if (!image) return next(new ErrorHandler("Please Add Photo", 400));
+
     if (
-      !image ||
       !turfName ||
       !turfLocation ||
       !services ||
       !courtNumbers ||
       !price ||
       !typeOfCourt
-    )
+    ) {
+      rm(image.path, () => {
+        console.log("Deleted");
+      });
       return next(new ErrorHandler("Please provide all fields", 400));
+    }
 
     let turf = await Turf.create({
-      image,
+      image: image.path,
       turfName,
       turfLocation,
       services,
@@ -45,6 +52,28 @@ export const turfCreate = async (
     });
   } catch (error) {
     next(error);
+  }
+};
+
+export const getTurf = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    console.log(id)
+
+    const turf = await Turf.findById(id);
+
+    if (!turf) return new ErrorHandler("Invalid Turf", 400);
+
+    return res.status(201).json({
+      success: true,
+      turf,
+    });
+  } catch (error) {
+    next(ErrorHandler);
   }
 };
 

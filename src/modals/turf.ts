@@ -21,7 +21,8 @@ const turfSchema = new mongoose.Schema(
       type: [String],
     },
     services: {
-      type: [String],
+      type:[String],
+      // type: [Schema.Types.Mixed],
       required: [true, "Mention the serives"],
     },
     courtNumbers: {

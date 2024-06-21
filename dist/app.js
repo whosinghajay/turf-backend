@@ -20,6 +20,8 @@ app.use((0, cors_1.default)());
 //routes
 app.use("/api/v1/user", user_js_1.default);
 app.use("/api/v1/turf", turf_js_1.default);
+//used this middleware for multer
+app.use("/uploads", express_1.default.static("uploads"));
 //error middleware
 app.use(error_js_1.errorMiddleware);
 //server connection

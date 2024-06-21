@@ -1,9 +1,11 @@
 import express from "express";
-import { deleteTurf, turfCreate, updateTurf } from "../controllers/turf";
+import { createTurf, deleteTurf, getTurf, updateTurf } from "../controllers/turf";
+import { singleUpload } from "../middlewares/multer";
 
 const app = express.Router();
 
-app.post("/", turfCreate);
+app.post("/", singleUpload, createTurf);
+app.get("/:id", getTurf);
 app.delete("/:id", deleteTurf);
 app.put("/:id", updateTurf);
 

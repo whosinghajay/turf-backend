@@ -23,6 +23,9 @@ app.use(cors());
 app.use("/api/v1/user", user);
 app.use("/api/v1/turf", turf);
 
+//used this middleware for multer
+app.use("/uploads", express.static("uploads"));
+
 //error middleware
 app.use(errorMiddleware);
 
