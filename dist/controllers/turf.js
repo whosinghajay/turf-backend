@@ -63,7 +63,13 @@ exports.getTurf = getTurf;
 const deleteTurf = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const turf = await turf_1.Turf.findByIdAndDelete(id);
+        const turf = await turf_1.Turf.findById(id);
+        if (!turf)
+            return new utility_class_1.default("Turf not found", 400);
+        (0, fs_1.rm)(turf?.image, () => {
+            console.log("iamge deleted successfully");
+        });
+        await turf.deleteOne();
         return res.status(200).json({
             success: true,
             message: `Turf ${turf?.turfName} deleted Successfully!`,
@@ -77,12 +83,17 @@ exports.deleteTurf = deleteTurf;
 const updateTurf = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { image, turfName, turfLocation, services, courtNumbers, price, typeOfCourt, } = req.body;
+        const { turfName, turfLocation, services, courtNumbers, price, typeOfCourt, } = req.body;
+        const image = req.file;
         const turf = await turf_1.Turf.findById(id);
         if (!turf)
             return next(new utility_class_1.default("Turf Not Found", 404));
-        if (image)
-            turf.image = image;
+        if (image) {
+            (0, fs_1.rm)(turf.image, () => {
+                console.log("previous image deleted and the new one is added");
+            });
+            turf.image = image.path;
+        }
         if (turfName)
             turf.turfName = turfName;
         if (turfLocation)

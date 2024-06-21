@@ -62,7 +62,7 @@ export const getTurf = async (
 ) => {
   try {
     const { id } = req.params;
-    console.log(id)
+    console.log(id);
 
     const turf = await Turf.findById(id);
 
@@ -85,7 +85,15 @@ export const deleteTurf = async (
   try {
     const { id } = req.params;
 
-    const turf = await Turf.findByIdAndDelete(id);
+    const turf = await Turf.findById(id);
+
+    if (!turf) return new ErrorHandler("Turf not found", 400);
+
+    rm(turf?.image!, () => {
+      console.log("iamge deleted successfully");
+    });
+
+    await turf.deleteOne();
 
     return res.status(200).json({
       success: true,
@@ -105,7 +113,6 @@ export const updateTurf = async (
     const { id } = req.params;
 
     const {
-      image,
       turfName,
       turfLocation,
       services,
@@ -114,11 +121,18 @@ export const updateTurf = async (
       typeOfCourt,
     } = req.body;
 
+    const image = req.file;
+
     const turf = await Turf.findById(id);
 
     if (!turf) return next(new ErrorHandler("Turf Not Found", 404));
 
-    if (image) turf.image = image;
+    if (image) {
+      rm(turf.image, () => {
+        console.log("previous image deleted and the new one is added");
+      });
+      turf.image = image.path;
+    }
     if (turfName) turf.turfName = turfName;
     if (turfLocation) turf.turfLocation = turfLocation;
     if (services) turf.services = services;

@@ -10,5 +10,5 @@ const app = express_1.default.Router();
 app.post("/", multer_1.singleUpload, turf_1.createTurf);
 app.get("/:id", turf_1.getTurf);
 app.delete("/:id", turf_1.deleteTurf);
-app.put("/:id", turf_1.updateTurf);
+app.put("/:id", multer_1.singleUpload, turf_1.updateTurf);
 exports.default = app;
