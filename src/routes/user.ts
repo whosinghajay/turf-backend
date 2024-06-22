@@ -3,7 +3,7 @@ import { deleteUser, getAllUser, getUser, user } from "../controllers/user";
 
 const app = express.Router();
 
-app.post("/", user);
+app.post("/create", user);
 app.get("/all", getAllUser);
 app.get("/:id", getUser);
 app.delete("/:id", deleteUser);

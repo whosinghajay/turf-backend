@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import ErrorHandler from "../utils/utility-class";
-import { Turf } from "../modals/turf";
 import { rm } from "fs";
+import { Turf } from "../modals/turf";
+import ErrorHandler from "../utils/utility-class";
 
 export const createTurf = async (
   req: Request,
@@ -77,6 +77,26 @@ export const getTurf = async (
   }
 };
 
+export const getAllTurf = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const turf = await Turf.find({});
+
+    if (!turf) return ErrorHandler;
+
+    return res.status(201).json({
+      success: true,
+      total: turf.length,
+      turf,
+    });
+  } catch (error) {
+    next(ErrorHandler);
+  }
+};
+
 export const deleteTurf = async (
   req: Request,
   res: Response,
@@ -90,7 +110,7 @@ export const deleteTurf = async (
     if (!turf) return new ErrorHandler("Turf not found", 400);
 
     rm(turf?.image!, () => {
-      console.log("iamge deleted successfully");
+      console.log("image deleted successfully");
     });
 
     await turf.deleteOne();
@@ -145,6 +165,36 @@ export const updateTurf = async (
     return res.status(201).json({
       success: true,
       message: `Successfully updated the turf ${turf?.turfName}`,
+      turf,
+    });
+  } catch (error) {
+    next(ErrorHandler);
+  }
+};
+
+export const getAllTypes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const types = await Turf.distinct("typeOfCourt");
+  return res.status(200).json({
+    success: true,
+    total: types.length,
+    types,
+  });
+};
+
+export const getlatestTurf = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const turf = await Turf.find({}).sort({ createdAt: -1 });
+
+    return res.status(201).json({
+      success: true,
       turf,
     });
   } catch (error) {

@@ -34,6 +34,7 @@ exports.getAllUser = (0, error_1.TryCatch)(async (req, res, next) => {
     const user = await user_1.User.find({});
     return res.status(200).json({
         success: true,
+        total: user.length,
         user,
     });
 });

@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateTurf = exports.deleteTurf = exports.getTurf = exports.createTurf = void 0;
-const utility_class_1 = __importDefault(require("../utils/utility-class"));
-const turf_1 = require("../modals/turf");
+exports.getlatestTurf = exports.getAllTypes = exports.updateTurf = exports.deleteTurf = exports.getAllTurf = exports.getTurf = exports.createTurf = void 0;
 const fs_1 = require("fs");
+const turf_1 = require("../modals/turf");
+const utility_class_1 = __importDefault(require("../utils/utility-class"));
 const createTurf = async (req, res, next) => {
     try {
         const { turfName, turfLocation, services, courtNumbers, price, typeOfCourt, } = req.body;
@@ -60,6 +60,22 @@ const getTurf = async (req, res, next) => {
     }
 };
 exports.getTurf = getTurf;
+const getAllTurf = async (req, res, next) => {
+    try {
+        const turf = await turf_1.Turf.find({});
+        if (!turf)
+            return utility_class_1.default;
+        return res.status(201).json({
+            success: true,
+            total: turf.length,
+            turf,
+        });
+    }
+    catch (error) {
+        next(utility_class_1.default);
+    }
+};
+exports.getAllTurf = getAllTurf;
 const deleteTurf = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -67,7 +83,7 @@ const deleteTurf = async (req, res, next) => {
         if (!turf)
             return new utility_class_1.default("Turf not found", 400);
         (0, fs_1.rm)(turf?.image, () => {
-            console.log("iamge deleted successfully");
+            console.log("image deleted successfully");
         });
         await turf.deleteOne();
         return res.status(200).json({
@@ -118,3 +134,25 @@ const updateTurf = async (req, res, next) => {
     }
 };
 exports.updateTurf = updateTurf;
+const getAllTypes = async (req, res, next) => {
+    const types = await turf_1.Turf.distinct("typeOfCourt");
+    return res.status(200).json({
+        success: true,
+        total: types.length,
+        types,
+    });
+};
+exports.getAllTypes = getAllTypes;
+const getlatestTurf = async (req, res, next) => {
+    try {
+        const turf = await turf_1.Turf.find({}).sort({ createdAt: -1 });
+        return res.status(201).json({
+            success: true,
+            turf,
+        });
+    }
+    catch (error) {
+        next(utility_class_1.default);
+    }
+};
+exports.getlatestTurf = getlatestTurf;
