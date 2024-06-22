@@ -13,6 +13,7 @@ const port = process.env.PORT || 3000;
 //database connection
 connectDB();
 
+//node cache
 export const myCache = new NodeCache();
 
 const app = express();

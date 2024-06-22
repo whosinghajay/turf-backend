@@ -15,6 +15,7 @@ const node_cache_1 = __importDefault(require("node-cache"));
 const port = process.env.PORT || 3000;
 //database connection
 (0, features_js_1.connectDB)();
+//node cache
 exports.myCache = new node_cache_1.default();
 const app = (0, express_1.default)();
 // Middleware to parse JSON request bodies

@@ -3,7 +3,6 @@ import { rm } from "fs";
 import { Turf } from "../modals/turf";
 import ErrorHandler from "../utils/utility-class";
 import { myCache } from "../app";
-import { json } from "stream/consumers";
 
 export const createTurf = async (
   req: Request,
@@ -64,11 +63,16 @@ export const getTurf = async (
 ) => {
   try {
     const { id } = req.params;
-    console.log(id);
 
-    const turf = await Turf.findById(id);
+    let turf;
 
-    if (!turf) return new ErrorHandler("Invalid Turf", 400);
+    if (myCache.has(`getTurf-${id}`)) {
+      turf = JSON.parse(myCache.get(`getTurf-${id}`) as string);
+    } else {
+      turf = await Turf.findById(id);
+      if (!turf) return new ErrorHandler("Invalid Turf", 400);
+      myCache.set(`getTurf-${id}`, JSON.stringify(turf));
+    }
 
     return res.status(201).json({
       success: true,
@@ -191,7 +195,7 @@ export const getAllTypes = async (
     types = await Turf.distinct("typeOfCourt");
     myCache.set("types", JSON.stringify(types));
   }
-  
+
   return res.status(200).json({
     success: true,
     total: types.length,

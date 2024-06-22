@@ -47,10 +47,16 @@ exports.createTurf = createTurf;
 const getTurf = async (req, res, next) => {
     try {
         const { id } = req.params;
-        console.log(id);
-        const turf = await turf_1.Turf.findById(id);
-        if (!turf)
-            return new utility_class_1.default("Invalid Turf", 400);
+        let turf;
+        if (app_1.myCache.has(`getTurf-${id}`)) {
+            turf = JSON.parse(app_1.myCache.get(`getTurf-${id}`));
+        }
+        else {
+            turf = await turf_1.Turf.findById(id);
+            if (!turf)
+                return new utility_class_1.default("Invalid Turf", 400);
+            app_1.myCache.set(`getTurf-${id}`, JSON.stringify(turf));
+        }
         return res.status(201).json({
             success: true,
             turf,
