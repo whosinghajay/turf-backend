@@ -36,7 +36,7 @@ const turfSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Provide us the price of the turf"],
     },
-    typeOfCourt: {
+    typeOfCourt: { //category
       type: String,
       required: [true, "Enter the type of court"],
     },
