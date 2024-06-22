@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { rm } from "fs";
 import { Turf } from "../modals/turf";
 import ErrorHandler from "../utils/utility-class";
+import { myCache } from "../app";
+import { json } from "stream/consumers";
 
 export const createTurf = async (
   req: Request,
@@ -83,9 +85,13 @@ export const getAllTurf = async (
   next: NextFunction
 ) => {
   try {
-    const turf = await Turf.find({});
-
-    if (!turf) return ErrorHandler;
+    let turf;
+    if (myCache.has("getAllTurf")) {
+      turf = JSON.parse(myCache.get("getAllTurf") as string);
+    } else {
+      turf = await Turf.find({});
+      myCache.set("getAllTurf", JSON.stringify(turf));
+    }
 
     return res.status(201).json({
       success: true,
@@ -177,7 +183,15 @@ export const getAllTypes = async (
   res: Response,
   next: NextFunction
 ) => {
-  const types = await Turf.distinct("typeOfCourt");
+  let types;
+
+  if (myCache.has("types")) {
+    types = JSON.parse(myCache.get("types") as string);
+  } else {
+    types = await Turf.distinct("typeOfCourt");
+    myCache.set("types", JSON.stringify(types));
+  }
+  
   return res.status(200).json({
     success: true,
     total: types.length,

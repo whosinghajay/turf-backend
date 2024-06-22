@@ -7,6 +7,7 @@ exports.getlatestTurf = exports.getAllTypes = exports.updateTurf = exports.delet
 const fs_1 = require("fs");
 const turf_1 = require("../modals/turf");
 const utility_class_1 = __importDefault(require("../utils/utility-class"));
+const app_1 = require("../app");
 const createTurf = async (req, res, next) => {
     try {
         const { turfName, turfLocation, services, courtNumbers, price, typeOfCourt, } = req.body;
@@ -62,9 +63,14 @@ const getTurf = async (req, res, next) => {
 exports.getTurf = getTurf;
 const getAllTurf = async (req, res, next) => {
     try {
-        const turf = await turf_1.Turf.find({});
-        if (!turf)
-            return utility_class_1.default;
+        let turf;
+        if (app_1.myCache.has("getAllTurf")) {
+            turf = JSON.parse(app_1.myCache.get("getAllTurf"));
+        }
+        else {
+            turf = await turf_1.Turf.find({});
+            app_1.myCache.set("getAllTurf", JSON.stringify(turf));
+        }
         return res.status(201).json({
             success: true,
             total: turf.length,
@@ -135,7 +141,14 @@ const updateTurf = async (req, res, next) => {
 };
 exports.updateTurf = updateTurf;
 const getAllTypes = async (req, res, next) => {
-    const types = await turf_1.Turf.distinct("typeOfCourt");
+    let types;
+    if (app_1.myCache.has("types")) {
+        types = JSON.parse(app_1.myCache.get("types"));
+    }
+    else {
+        types = await turf_1.Turf.distinct("typeOfCourt");
+        app_1.myCache.set("types", JSON.stringify(types));
+    }
     return res.status(200).json({
         success: true,
         total: types.length,

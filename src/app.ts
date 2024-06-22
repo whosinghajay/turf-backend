@@ -6,11 +6,14 @@ import user from "./routes/user.js";
 import turf from "./routes/turf.js";
 import { connectDB } from "./utils/features.js";
 import { errorMiddleware } from "./middlewares/error.js";
+import NodeCache from "node-cache";
 
 const port = process.env.PORT || 3000;
 
 //database connection
 connectDB();
+
+export const myCache = new NodeCache();
 
 const app = express();
 
