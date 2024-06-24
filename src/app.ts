@@ -1,12 +1,21 @@
-import express from "express";
-import "dotenv/config";
 import cors from "cors";
-
-import user from "./routes/user.js";
-import turf from "./routes/turf.js";
-import { connectDB } from "./utils/features.js";
-import { errorMiddleware } from "./middlewares/error.js";
+import "dotenv/config";
+import express from "express";
 import NodeCache from "node-cache";
+import { config } from "dotenv";
+import morgan from "morgan";
+
+//importing routes
+import booking from "./routes/booking.js";
+import turf from "./routes/turf.js";
+import user from "./routes/user.js";
+
+import { errorMiddleware } from "./middlewares/error.js";
+import { connectDB } from "./utils/features.js";
+
+config({
+  path: "./.env",
+});
 
 const port = process.env.PORT || 3000;
 
@@ -20,12 +29,15 @@ const app = express();
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+//This is used to set up middleware for logging HTTP requests
+app.use(morgan("dev"));
 
 app.use(cors());
 
 //routes
 app.use("/api/v1/user", user);
 app.use("/api/v1/turf", turf);
+app.use("/api/v1/booking", booking);
 
 //used this middleware for multer
 app.use("/uploads", express.static("uploads"));

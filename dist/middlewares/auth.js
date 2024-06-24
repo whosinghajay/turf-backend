@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.turfPosterOnly = exports.adminOnly = void 0;
+exports.userOnly = exports.turfPosterOnly = exports.adminOnly = void 0;
 const user_1 = require("../modals/user");
 const utility_class_1 = __importDefault(require("../utils/utility-class"));
 const adminOnly = async (req, res, next) => {
@@ -30,3 +30,20 @@ const turfPosterOnly = async (req, res, next) => {
     next();
 };
 exports.turfPosterOnly = turfPosterOnly;
+const userOnly = async (req, res, next) => {
+    try {
+        const { id } = req.query;
+        if (!id)
+            return next(new utility_class_1.default("You have to login first", 401));
+        const user = await user_1.User.findById(id);
+        if (!user)
+            return next(new utility_class_1.default("No user found", 401));
+        if (user.role !== "user")
+            return next(new utility_class_1.default("You have to be user in order to book a turf", 401));
+        next();
+    }
+    catch (error) {
+        next(utility_class_1.default);
+    }
+};
+exports.userOnly = userOnly;

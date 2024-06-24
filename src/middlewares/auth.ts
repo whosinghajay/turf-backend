@@ -43,3 +43,28 @@ export const turfPosterOnly = async (
 
   next();
 };
+
+export const userOnly = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.query;
+
+    if (!id) return next(new ErrorHandler("You have to login first", 401));
+
+    const user = await User.findById(id);
+
+    if (!user) return next(new ErrorHandler("No user found", 401));
+
+    if (user.role !== "user")
+      return next(
+        new ErrorHandler("You have to be user in order to book a turf", 401)
+      );
+
+    next();
+  } catch (error) {
+    next(ErrorHandler);
+  }
+};
