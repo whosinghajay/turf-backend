@@ -8,6 +8,7 @@ const fs_1 = require("fs");
 const turf_1 = require("../modals/turf");
 const utility_class_1 = __importDefault(require("../utils/utility-class"));
 const app_1 = require("../app");
+const features_1 = require("../utils/features");
 const createTurf = async (req, res, next) => {
     try {
         const { turfName, turfLocation, services, courtNumbers, price, typeOfCourt, } = req.body;
@@ -34,6 +35,7 @@ const createTurf = async (req, res, next) => {
             price,
             typeOfCourt,
         });
+        await (0, features_1.invalidateCache)({ turf: true });
         res.status(201).json({
             success: true,
             turf,
@@ -98,6 +100,7 @@ const deleteTurf = async (req, res, next) => {
             console.log("image deleted successfully");
         });
         await turf.deleteOne();
+        await (0, features_1.invalidateCache)({ turf: true });
         return res.status(200).json({
             success: true,
             message: `Turf ${turf?.turfName} deleted Successfully!`,
@@ -135,6 +138,7 @@ const updateTurf = async (req, res, next) => {
         if (typeOfCourt)
             turf.typeOfCourt = typeOfCourt;
         await turf.save();
+        await (0, features_1.invalidateCache)({ turf: true });
         return res.status(201).json({
             success: true,
             message: `Successfully updated the turf ${turf?.turfName}`,

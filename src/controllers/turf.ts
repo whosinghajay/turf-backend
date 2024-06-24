@@ -3,6 +3,7 @@ import { rm } from "fs";
 import { Turf } from "../modals/turf";
 import ErrorHandler from "../utils/utility-class";
 import { myCache } from "../app";
+import { invalidateCache } from "../utils/features";
 
 export const createTurf = async (
   req: Request,
@@ -46,6 +47,8 @@ export const createTurf = async (
       price,
       typeOfCourt,
     });
+
+    await invalidateCache({ turf: true });
 
     res.status(201).json({
       success: true,
@@ -125,6 +128,8 @@ export const deleteTurf = async (
 
     await turf.deleteOne();
 
+    await invalidateCache({ turf: true });
+
     return res.status(200).json({
       success: true,
       message: `Turf ${turf?.turfName} deleted Successfully!`,
@@ -171,6 +176,8 @@ export const updateTurf = async (
     if (typeOfCourt) turf.typeOfCourt = typeOfCourt;
 
     await turf.save();
+
+    await invalidateCache({ turf: true });
 
     return res.status(201).json({
       success: true,
