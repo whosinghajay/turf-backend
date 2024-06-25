@@ -23,7 +23,13 @@ const bookingSchema = new mongoose.Schema(
           type: mongoose.Types.ObjectId,
           ref: "Turf",
         },
-        slot: Schema.Types.Mixed,
+        slot: {
+          date: Date,
+          time: {
+            startTime: Date,
+            endTime: Date,
+          },
+        },
       },
     ],
     bookingInfo: {

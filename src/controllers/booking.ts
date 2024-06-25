@@ -30,3 +30,97 @@ export const createBooking = async (
     next(ErrorHandler);
   }
 };
+
+export const cancelBooking = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) return next(new ErrorHandler("No turf found for this id", 401));
+
+    const booking = await Booking.findByIdAndDelete(id);
+
+    if (!booking) return next(new ErrorHandler("No turf found", 400));
+
+    return res.status(201).json({
+      success: true,
+      message: `Booking Canceled`,
+      booking,
+    });
+  } catch (error) {
+    next(ErrorHandler);
+  }
+};
+
+// export const changeTime = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { id } = req.params;
+
+//     const booking = await Booking.findById(id);
+
+//     // const startTime = booking!.turfInfo![0]!.slot!.time!.startTime as Date;
+//     // const endTime = booking!.turfInfo![0]!.slot!.time!.endTime as Date;
+
+//     if (booking!.turfInfo![0]!.slot!.time!.startTime as Date) {
+//       booking!.turfInfo![0]!.slot!.time!.startTime = req.body.startTime;
+//       booking!.turfInfo![0]!.slot!.time!.endTime = req.body.endTime;
+//     }
+
+//     await booking?.save();
+
+//     return res.status(201).json({
+//       success: true,
+//       message: "Updated time successfully",
+//       booking,
+//     });
+//   } catch (error) {
+//     next(ErrorHandler);
+//   }
+// };
+
+export const getBooking = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) return next(new ErrorHandler("Invalid Id", 401));
+
+    const booking = await Booking.findById(id);
+
+    if (!booking) return next(new ErrorHandler("No Booking Found", 401));
+
+    return res.status(200).json({
+      success: true,
+      booking,
+    });
+  } catch (error) {
+    next(ErrorHandler);
+  }
+};
+
+export const getAllBooking = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const bookings = await Booking.find({});
+
+    return res.status(200).json({
+      success: true,
+      bookings,
+    });
+  } catch (error) {
+    next(ErrorHandler);
+  }
+};
