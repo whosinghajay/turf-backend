@@ -16,4 +16,5 @@ export type ControllerType = (
 
 export type invalidateCacheProps = {
   turf?: boolean;
+  admin?: boolean;
 };

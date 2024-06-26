@@ -14,7 +14,7 @@ const connectDB = () => {
         .catch((e) => console.log(e));
 };
 exports.connectDB = connectDB;
-const invalidateCache = async ({ turf }) => {
+const invalidateCache = async ({ turf, admin, }) => {
     if (turf) {
         const turfKeys = ["types", "getAllTurf"];
         const turfs = await turf_1.Turf.find({}).select("_id");
@@ -22,6 +22,9 @@ const invalidateCache = async ({ turf }) => {
             turfKeys.push(`getTurf-${i._id}`);
         });
         app_1.myCache.del(turfKeys);
+    }
+    if (admin) {
+        app_1.myCache.del(["admin-stats"]);
     }
 };
 exports.invalidateCache = invalidateCache;

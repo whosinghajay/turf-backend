@@ -10,7 +10,10 @@ export const connectDB = () => {
     .catch((e) => console.log(e));
 };
 
-export const invalidateCache = async ({ turf }: invalidateCacheProps) => {
+export const invalidateCache = async ({
+  turf,
+  admin,
+}: invalidateCacheProps) => {
   if (turf) {
     const turfKeys: string[] = ["types", "getAllTurf"];
 
@@ -21,6 +24,10 @@ export const invalidateCache = async ({ turf }: invalidateCacheProps) => {
     });
 
     myCache.del(turfKeys);
+  }
+
+  if (admin) {
+    myCache.del(["admin-stats"]);
   }
 };
 

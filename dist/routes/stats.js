@@ -8,4 +8,5 @@ const stats_1 = require("../controllers/stats");
 const auth_1 = require("../middlewares/auth");
 const app = express_1.default.Router();
 app.get("/stats", auth_1.adminOnly, stats_1.getDashboardStats);
+app.get("/pie", auth_1.adminOnly, stats_1.getPieCharts);
 exports.default = app;

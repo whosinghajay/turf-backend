@@ -18,6 +18,9 @@ export const getDashboardStats = async (
     } else {
       const today = new Date();
 
+      const sixMonthAgo = new Date();
+      sixMonthAgo.setMonth(sixMonthAgo.getMonth() - 6);
+
       const thisMonth = {
         start: new Date(today.getDate(), today.getMonth(), 1),
         end: today,
@@ -70,6 +73,17 @@ export const getDashboardStats = async (
         },
       });
 
+      const lastSixMonthBookingsPromise = Booking.find({
+        createdAt: {
+          $gte: sixMonthAgo,
+          $lte: today,
+        },
+      });
+
+      const latestTransactionPromise = Booking.find({})
+        .limit(4)
+        .select(["turfInfo", "total", "status"]);
+
       const [
         thisMonthTurves,
         thisMonthUsers,
@@ -80,6 +94,10 @@ export const getDashboardStats = async (
         usersCount,
         turvesCount,
         allBookings,
+        lastSixMonthBookings,
+        categories,
+        maleUsers,
+        latestTransaction,
       ] = await Promise.all([
         thisMonthTurvesPromise,
         thisMonthUsersPromise,
@@ -90,6 +108,10 @@ export const getDashboardStats = async (
         User.countDocuments(),
         Turf.countDocuments(),
         Booking.find({}).select("total"),
+        lastSixMonthBookingsPromise,
+        Turf.distinct("typeOfCourt"),
+        User.countDocuments({ gender: "male" }),
+        latestTransactionPromise,
       ]);
 
       const thisMonthRevenue = thisMonthBookings.reduce(
@@ -127,15 +149,97 @@ export const getDashboardStats = async (
         booking: allBookings.length,
       };
 
+      const bookingMonthCount = new Array(6).fill(0);
+      const bookingMonthRevenue = new Array(6).fill(0);
+
+      lastSixMonthBookings.forEach((booking) => {
+        const creationDate = booking.createdAt;
+        // const monthDiff = today.getMonth() - creationDate.getMonth();
+        const monthDiff =
+          (today.getMonth() - creationDate.getMonth() + 12) % 12;
+
+        if (monthDiff < 6) {
+          bookingMonthCount[6 - monthDiff - 1] += 1;
+          bookingMonthRevenue[6 - monthDiff - 1] += booking.total;
+        }
+      });
+
+      const categoriesCountPromise = categories.map((category) =>
+        Turf.countDocuments({ category })
+      );
+
+      const categoriesCount = await Promise.all(categoriesCountPromise); //not working properly
+
+      const categoryCount: Record<string, number>[] = [];
+
+      categories.forEach((category, i) => {
+        categoryCount.push({
+          [category]: Math.round((categoriesCount[i] / turvesCount) * 100),
+        });
+      });
+
+      const userRatio = {
+        female: usersCount - maleUsers,
+        male: maleUsers,
+      };
+
       stats = {
+        categoryCount, //not working properly
         changePercent,
         count,
+        chart: {
+          order: bookingMonthCount,
+          revenue: bookingMonthRevenue,
+        },
+        userRatio,
+        latestTransaction,
       };
+
+      myCache.set("admin-stats", JSON.stringify(stats));
     }
 
     return res.status(200).json({
       success: true,
       stats,
+    });
+  } catch (error) {
+    next(ErrorHandler);
+  }
+};
+
+export const getPieCharts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let charts;
+
+    if (myCache.has("admin-pie-charts")) {
+      charts = JSON.parse(myCache.get("admin-pie-charts") as string);
+    } else {
+      const [processing, booked, canceled] = await Promise.all([
+        Booking.countDocuments({ status: "processing" }),
+        Booking.countDocuments({ status: "booked" }),
+        Booking.countDocuments({ status: "canceled" }),
+      ]);
+
+      const bookingFullfillment = {
+        processing,
+        booked,
+        canceled,
+      };
+
+      charts = {
+        bookingFullfillment,
+      };
+
+      myCache.set("admin-pie-charts", JSON.stringify(charts));
+    }
+    
+    return res.status(200).json({
+      success: true,
+      charts,
     });
   } catch (error) {
     next(ErrorHandler);
