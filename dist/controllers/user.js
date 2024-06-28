@@ -7,6 +7,8 @@ exports.deleteUser = exports.getUser = exports.getAllUser = exports.user = void 
 const error_1 = require("../middlewares/error");
 const user_1 = require("../modals/user");
 const utility_class_1 = __importDefault(require("../utils/utility-class"));
+const app_1 = require("../app");
+const features_1 = require("../utils/features");
 exports.user = (0, error_1.TryCatch)(async (req, res, next) => {
     // throw new Error(); //to throw error and moves to catch block
     const { phoneNumber, gender, fullName, location, role } = req.body;
@@ -25,13 +27,21 @@ exports.user = (0, error_1.TryCatch)(async (req, res, next) => {
     }
     //creating user
     user = await user_1.User.create({ phoneNumber, gender, fullName, location, role });
+    await (0, features_1.invalidateCache)({ user: true });
     return res.status(201).json({
         success: true,
         message: `Welcome, ${user?.fullName}`,
     });
 });
 exports.getAllUser = (0, error_1.TryCatch)(async (req, res, next) => {
-    const user = await user_1.User.find({});
+    let user;
+    if (app_1.myCache.has("getAllUser")) {
+        user = JSON.parse(app_1.myCache.get("getAllUser"));
+    }
+    else {
+        user = await user_1.User.find({});
+        app_1.myCache.set("getAllUser", JSON.stringify(user));
+    }
     return res.status(200).json({
         success: true,
         total: user.length,
@@ -40,9 +50,16 @@ exports.getAllUser = (0, error_1.TryCatch)(async (req, res, next) => {
 });
 exports.getUser = (0, error_1.TryCatch)(async (req, res, next) => {
     const { id } = req.params;
-    const user = await user_1.User.findById(id);
-    if (!user)
-        next(new utility_class_1.default("Invalid Id", 400));
+    let user;
+    if (app_1.myCache.has(`getUser-${id}`)) {
+        user = JSON.parse(app_1.myCache.get(`getUser-${id}`));
+    }
+    else {
+        user = await user_1.User.findById(id);
+        if (!user)
+            next(new utility_class_1.default("Invalid Id", 400));
+        app_1.myCache.set(`getUser-${id}`, JSON.stringify(user));
+    }
     return res.status(200).json({
         success: true,
         user,
@@ -54,6 +71,7 @@ exports.deleteUser = (0, error_1.TryCatch)(async (req, res, next) => {
     if (!user)
         return next(new utility_class_1.default("Invalid Id", 400));
     await user?.deleteOne();
+    await (0, features_1.invalidateCache)({ user: true, userId: String(user._id) });
     return res.status(200).json({
         success: true,
         message: "User deleted Successfully!",

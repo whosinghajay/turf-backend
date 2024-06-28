@@ -4,7 +4,7 @@ import ErrorHandler from "../utils/utility-class";
 import { Turf } from "../modals/turf";
 import { User } from "../modals/user";
 import { Booking } from "../modals/booking";
-import { calculatePercentage } from "../utils/features";
+import { calculatePercentage, getInventories } from "../utils/features";
 
 export const getDashboardStats = async (
   req: Request,
@@ -164,18 +164,9 @@ export const getDashboardStats = async (
         }
       });
 
-      const categoriesCountPromise = categories.map((category) =>
-        Turf.countDocuments({ category })
-      );
-
-      const categoriesCount = await Promise.all(categoriesCountPromise); //not working properly
-
-      const categoryCount: Record<string, number>[] = [];
-
-      categories.forEach((category, i) => {
-        categoryCount.push({
-          [category]: Math.round((categoriesCount[i] / turvesCount) * 100),
-        });
+      const categoryCount: Record<string, number>[] = await getInventories({
+        categories,
+        turvesCount,
       });
 
       const userRatio = {
@@ -218,11 +209,14 @@ export const getPieCharts = async (
     if (myCache.has("admin-pie-charts")) {
       charts = JSON.parse(myCache.get("admin-pie-charts") as string);
     } else {
-      const [processing, booked, canceled] = await Promise.all([
-        Booking.countDocuments({ status: "processing" }),
-        Booking.countDocuments({ status: "booked" }),
-        Booking.countDocuments({ status: "canceled" }),
-      ]);
+      const [processing, booked, canceled, categories, turvesCount] =
+        await Promise.all([
+          Booking.countDocuments({ status: "processing" }),
+          Booking.countDocuments({ status: "booked" }),
+          Booking.countDocuments({ status: "canceled" }),
+          Turf.distinct("typeOfCourt"),
+          Turf.countDocuments(),
+        ]);
 
       const bookingFullfillment = {
         processing,
@@ -230,13 +224,19 @@ export const getPieCharts = async (
         canceled,
       };
 
+      const turvesCategories = await getInventories({
+        categories,
+        turvesCount,
+      });
+
       charts = {
         bookingFullfillment,
+        turvesCategories,
       };
 
       myCache.set("admin-pie-charts", JSON.stringify(charts));
     }
-    
+
     return res.status(200).json({
       success: true,
       charts,

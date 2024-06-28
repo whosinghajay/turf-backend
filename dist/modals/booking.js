@@ -6,13 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Booking = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bookingSchema = new mongoose_1.default.Schema({
-    user: {
-        username: String,
-        userId: {
-            type: mongoose_1.default.Types.ObjectId,
-            ref: "User",
-        },
+    // user: {
+    // username: String,
+    userId: {
+        type: mongoose_1.default.Types.ObjectId,
+        ref: "User",
     },
+    // },
     status: {
         type: String,
         enum: ["processing", "booked", "canceled"],
@@ -39,24 +39,24 @@ const bookingSchema = new mongoose_1.default.Schema({
     bookingInfo: {
         city: {
             type: String,
-            required: true,
+            // required: true,
         },
         state: {
             type: String,
-            required: true,
+            // required: true,
         },
         country: {
             type: String,
-            required: true,
+            // required: true,
         },
         pinCode: {
             type: Number,
-            required: true,
+            // required: true,
         },
     },
     total: {
         type: Number,
-        required: true,
+        // required: true,
     },
 }, { timestamps: true });
 exports.Booking = mongoose_1.default.model("Booking", bookingSchema);

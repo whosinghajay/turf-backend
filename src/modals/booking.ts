@@ -2,13 +2,13 @@ import mongoose, { Schema } from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
-    user: {
-      username: String,
-      userId: {
-        type: mongoose.Types.ObjectId,
-        ref: "User",
-      },
+    // user: {
+    // username: String,
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
     },
+    // },
     status: {
       type: String,
       enum: ["processing", "booked", "canceled"],
@@ -35,24 +35,24 @@ const bookingSchema = new mongoose.Schema(
     bookingInfo: {
       city: {
         type: String,
-        required: true,
+        // required: true,
       },
       state: {
         type: String,
-        required: true,
+        // required: true,
       },
       country: {
         type: String,
-        required: true,
+        // required: true,
       },
       pinCode: {
         type: Number,
-        required: true,
+        // required: true,
       },
     },
     total: {
       type: Number,
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true }

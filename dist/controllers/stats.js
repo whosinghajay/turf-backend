@@ -114,13 +114,9 @@ const getDashboardStats = async (req, res, next) => {
                     bookingMonthRevenue[6 - monthDiff - 1] += booking.total;
                 }
             });
-            const categoriesCountPromise = categories.map((category) => turf_1.Turf.countDocuments({ category }));
-            const categoriesCount = await Promise.all(categoriesCountPromise); //not working properly
-            const categoryCount = [];
-            categories.forEach((category, i) => {
-                categoryCount.push({
-                    [category]: Math.round((categoriesCount[i] / turvesCount) * 100),
-                });
+            const categoryCount = await (0, features_1.getInventories)({
+                categories,
+                turvesCount,
             });
             const userRatio = {
                 female: usersCount - maleUsers,
@@ -156,18 +152,25 @@ const getPieCharts = async (req, res, next) => {
             charts = JSON.parse(app_1.myCache.get("admin-pie-charts"));
         }
         else {
-            const [processing, booked, canceled] = await Promise.all([
+            const [processing, booked, canceled, categories, turvesCount] = await Promise.all([
                 booking_1.Booking.countDocuments({ status: "processing" }),
                 booking_1.Booking.countDocuments({ status: "booked" }),
                 booking_1.Booking.countDocuments({ status: "canceled" }),
+                turf_1.Turf.distinct("typeOfCourt"),
+                turf_1.Turf.countDocuments(),
             ]);
             const bookingFullfillment = {
                 processing,
                 booked,
                 canceled,
             };
+            const turvesCategories = await (0, features_1.getInventories)({
+                categories,
+                turvesCount,
+            });
             charts = {
                 bookingFullfillment,
+                turvesCategories,
             };
             app_1.myCache.set("admin-pie-charts", JSON.stringify(charts));
         }

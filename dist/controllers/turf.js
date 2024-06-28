@@ -56,7 +56,7 @@ const getTurf = async (req, res, next) => {
         else {
             turf = await turf_1.Turf.findById(id);
             if (!turf)
-                return new utility_class_1.default("Invalid Turf", 400);
+                return next(new utility_class_1.default("Invalid Turf", 400));
             app_1.myCache.set(`getTurf-${id}`, JSON.stringify(turf));
         }
         return res.status(201).json({
@@ -95,12 +95,12 @@ const deleteTurf = async (req, res, next) => {
         const { id } = req.params;
         const turf = await turf_1.Turf.findById(id);
         if (!turf)
-            return new utility_class_1.default("Turf not found", 400);
+            return next(new utility_class_1.default("Turf not found", 400));
         (0, fs_1.rm)(turf?.image, () => {
             console.log("image deleted successfully");
         });
         await turf.deleteOne();
-        await (0, features_1.invalidateCache)({ turf: true });
+        await (0, features_1.invalidateCache)({ turf: true, turfId: String(turf._id) });
         return res.status(200).json({
             success: true,
             message: `Turf ${turf?.turfName} deleted Successfully!`,
@@ -138,7 +138,7 @@ const updateTurf = async (req, res, next) => {
         if (typeOfCourt)
             turf.typeOfCourt = typeOfCourt;
         await turf.save();
-        await (0, features_1.invalidateCache)({ turf: true });
+        await (0, features_1.invalidateCache)({ turf: true, turfId: String(turf._id) });
         return res.status(201).json({
             success: true,
             message: `Successfully updated the turf ${turf?.turfName}`,
@@ -166,6 +166,7 @@ const getAllTypes = async (req, res, next) => {
     });
 };
 exports.getAllTypes = getAllTypes;
+//why do i need this?
 const getlatestTurf = async (req, res, next) => {
     try {
         const turf = await turf_1.Turf.find({}).sort({ createdAt: -1 });

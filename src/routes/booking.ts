@@ -10,8 +10,8 @@ import { userOnly } from "../middlewares/auth";
 
 const app = express.Router();
 
-app.post("/create", userOnly, createBooking);
-app.delete("/:id", userOnly, cancelBooking);
+app.post("/create", createBooking);
+app.delete("/:id", cancelBooking);
 // app.put("/:id", userOnly, changeTime);
 app.get("/all", getAllBooking);
 app.get("/:id", getBooking);

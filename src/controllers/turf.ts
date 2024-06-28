@@ -73,7 +73,7 @@ export const getTurf = async (
       turf = JSON.parse(myCache.get(`getTurf-${id}`) as string);
     } else {
       turf = await Turf.findById(id);
-      if (!turf) return new ErrorHandler("Invalid Turf", 400);
+      if (!turf) return next(new ErrorHandler("Invalid Turf", 400));
       myCache.set(`getTurf-${id}`, JSON.stringify(turf));
     }
 
@@ -120,7 +120,7 @@ export const deleteTurf = async (
 
     const turf = await Turf.findById(id);
 
-    if (!turf) return new ErrorHandler("Turf not found", 400);
+    if (!turf) return next(new ErrorHandler("Turf not found", 400));
 
     rm(turf?.image!, () => {
       console.log("image deleted successfully");
@@ -128,7 +128,7 @@ export const deleteTurf = async (
 
     await turf.deleteOne();
 
-    await invalidateCache({ turf: true });
+    await invalidateCache({ turf: true, turfId: String(turf._id) });
 
     return res.status(200).json({
       success: true,
@@ -177,7 +177,7 @@ export const updateTurf = async (
 
     await turf.save();
 
-    await invalidateCache({ turf: true });
+    await invalidateCache({ turf: true, turfId: String(turf._id) });
 
     return res.status(201).json({
       success: true,
@@ -210,6 +210,7 @@ export const getAllTypes = async (
   });
 };
 
+//why do i need this?
 export const getlatestTurf = async (
   req: Request,
   res: Response,

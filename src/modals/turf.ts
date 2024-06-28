@@ -21,8 +21,7 @@ const turfSchema = new mongoose.Schema(
       type: [String],
     },
     services: {
-      type:[String],
-      // type: [Schema.Types.Mixed],
+      type: [String],
       required: [true, "Mention the serives"],
     },
     courtNumbers: {
@@ -30,13 +29,14 @@ const turfSchema = new mongoose.Schema(
       required: [true, "Provide us the number of court you have"],
     },
     slot: {
-      type: [Schema.Types.Mixed],
+      type: [Date],
     },
     price: {
       type: Number,
-      required: [true, "Provide us the price of the turf"],
+      required: [true, "Provide us price of the turf"],
     },
-    typeOfCourt: { //category
+    typeOfCourt: {
+      //category
       type: String,
       required: [true, "Enter the type of court"],
     },

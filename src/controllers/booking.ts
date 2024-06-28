@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import ErrorHandler from "../utils/utility-class";
 import { Booking } from "../modals/booking";
+import { invalidateCache } from "../utils/features";
+import { myCache } from "../app";
 
 export const createBooking = async (
   req: Request,
@@ -8,18 +10,20 @@ export const createBooking = async (
   next: NextFunction
 ) => {
   try {
-    const { user, status, turfInfo, bookingInfo, total } = req.body;
+    const { userId, status, turfInfo, bookingInfo, total } = req.body;
 
-    if (!user || !status || !turfInfo || !bookingInfo || !total)
+    if (!userId || !status || !turfInfo || !bookingInfo || !total)
       return next(new ErrorHandler("Please enter all the field", 400));
 
     const booking = await Booking.create({
-      user,
+      userId,
       status,
       turfInfo,
       bookingInfo,
       total,
     });
+
+    await invalidateCache({ booking: true });
 
     return res.status(201).json({
       success: true,
@@ -44,6 +48,11 @@ export const cancelBooking = async (
     const booking = await Booking.findByIdAndDelete(id);
 
     if (!booking) return next(new ErrorHandler("No turf found", 400));
+
+    await invalidateCache({
+      booking: true,
+      bookingId: String(`getBooking-${booking._id}`),
+    });
 
     return res.status(201).json({
       success: true,
@@ -92,12 +101,17 @@ export const getBooking = async (
 ) => {
   try {
     const { id } = req.params;
-
     if (!id) return next(new ErrorHandler("Invalid Id", 401));
 
-    const booking = await Booking.findById(id);
+    let booking;
 
-    if (!booking) return next(new ErrorHandler("No Booking Found", 401));
+    if (myCache.has(`getBooking-${id}`)) {
+      booking = JSON.parse(myCache.get(`getBooking-${id}`) as string);
+    } else {
+      booking = await Booking.findById(id);
+      if (!booking) return next(new ErrorHandler("No Booking Found", 401));
+      myCache.set(`getBooking-${id}`, JSON.stringify(booking));
+    }
 
     return res.status(200).json({
       success: true,
@@ -114,7 +128,14 @@ export const getAllBooking = async (
   next: NextFunction
 ) => {
   try {
-    const bookings = await Booking.find({});
+    let bookings;
+
+    if (myCache.has("getAllBooking")) {
+      bookings = JSON.parse(myCache.get("getAllBooking") as string);
+    } else {
+      bookings = await Booking.find({});
+      myCache.set("getAllBooking", JSON.stringify(bookings));
+    }
 
     return res.status(200).json({
       success: true,
@@ -124,3 +145,28 @@ export const getAllBooking = async (
     next(ErrorHandler);
   }
 };
+
+// {
+//   "userId": "667d136eb1d31d8f370acbd4",
+//   "status": "processing",
+//   "turfInfo": {
+//     "turfName": "A1 Turf",
+//     "turfPhoto": "uploads\\6f3eaa8a-2311-487f-a46c-56bfda8054.png",
+//     "turfPrice": 1234,
+//     "turfId": "667906af044c9bcb757208f0",
+//     "slot": {
+//       "date": "1970-01-01T00:00:12.222+00:00",
+//       "time": {
+//         "startTime": "1970-01-01T00:00:12.222+00:00",
+//         "endTime": "1970-01-01T00:00:12.222+00:00"
+//       }
+//     }
+//   },
+//   "bookingInfo": {
+//     "city": "Meerut",
+//     "state": "Uttar Pradesh",
+//     "country": "India",
+//     "pinCode": 250001
+//   },
+//   "total": 55
+// }

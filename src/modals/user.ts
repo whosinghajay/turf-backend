@@ -1,10 +1,11 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
     phoneNumber: {
       type: Number,
       required: [true, "Please entere the Phone Number"],
+      unique: true,
     },
     gender: {
       type: String,
@@ -19,12 +20,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide location of yours"],
     },
-    favorite: {
-      type: [Schema.Types.Mixed],
-    },
-    booking: {
-      type: [Schema.Types.Mixed],
-    },
+    // favorite: {
+    //   type: [Schema.Types.Mixed],
+    // },
+    // booking: {
+    //   type: [Schema.Types.Mixed],
+    // },
     role: {
       type: String,
       enum: ["user", "turfPoster", "admin"],
