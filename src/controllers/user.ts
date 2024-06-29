@@ -41,7 +41,7 @@ export const user = TryCatch(
       message: `Welcome, ${user?.fullName}`,
     });
   }
-);
+); 
 
 export const getAllUser = TryCatch(async (req, res, next) => {
   let user;
