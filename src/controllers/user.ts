@@ -23,6 +23,7 @@ export const user = TryCatch(
       return res.status(200).json({
         success: true,
         message: `Welcome back, ${user?.fullName}`,
+        user,
       });
     }
 
@@ -39,9 +40,10 @@ export const user = TryCatch(
     return res.status(201).json({
       success: true,
       message: `Welcome, ${user?.fullName}`,
+      user,
     });
   }
-); 
+);
 
 export const getAllUser = TryCatch(async (req, res, next) => {
   let user;

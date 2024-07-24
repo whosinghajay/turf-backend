@@ -5,6 +5,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Turf = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
+const timeSlotSchema = new mongoose_1.default.Schema({
+    time: {
+        type: String, // or Date, based on the requirement
+        // required: true,
+    },
+    booked: {
+        type: Boolean,
+        default: false,
+    },
+}, { _id: false });
+const daySchema = new mongoose_1.default.Schema({
+    date: {
+        type: Date,
+        // required: true,
+    },
+    slots: [timeSlotSchema],
+}, { _id: false });
+const courtSchema = new mongoose_1.default.Schema({
+    courtNumber: {
+        type: Number,
+        required: true,
+        unique: true,
+    },
+    days: [daySchema],
+}, { _id: false });
 const turfSchema = new mongoose_1.default.Schema({
     image: {
         type: String,
@@ -30,14 +55,12 @@ const turfSchema = new mongoose_1.default.Schema({
     },
     courtNumbers: {
         type: Number,
-        required: [true, "Provide us the number of court you have"],
+        // required: [true, "Provide us the number of court you have"],
     },
-    slot: {
-        type: [Date],
-    },
+    slot: [courtSchema],
     price: {
         type: Number,
-        required: [true, "Provide us price of the turf"],
+        required: [true, "Provide us the price of turf"],
     },
     typeOfCourt: {
         //category

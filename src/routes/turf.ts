@@ -13,8 +13,9 @@ import { adminOnly, turfPosterOnly } from "../middlewares/auth";
 
 const app = express.Router();
 
-app.post("/create", turfPosterOnly, singleUpload, createTurf);
-app.get("/all", adminOnly, getAllTurf);
+app.post("/create",singleUpload, createTurf);
+// app.get("/all", adminOnly, getAllTurf);
+app.get("/all", getAllTurf);
 app.get("/category", adminOnly, getAllTypes);
 app.get("/latest", getlatestTurf); //why??
 app.get("/:id", getTurf);

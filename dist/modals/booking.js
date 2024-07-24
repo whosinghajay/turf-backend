@@ -11,49 +11,70 @@ const bookingSchema = new mongoose_1.default.Schema({
     userId: {
         type: mongoose_1.default.Types.ObjectId,
         ref: "User",
+        required: true,
     },
     // },
     status: {
         type: String,
         enum: ["processing", "booked", "canceled"],
         default: "processing",
+        required: true,
     },
-    turfInfo: [
-        {
-            turfName: String,
-            turfPhoto: String,
-            turfPrice: Number,
-            turfId: {
-                type: mongoose_1.default.Types.ObjectId,
-                ref: "Turf",
-            },
-            slot: {
-                date: Date,
-                time: {
-                    startTime: Date,
-                    endTime: Date,
-                },
-            },
-        },
-    ],
-    bookingInfo: {
-        city: {
+    turfInfo: {
+        turfName: {
             type: String,
-            // required: true,
+            required: true,
         },
-        state: {
+        turfPhoto: {
             type: String,
-            // required: true,
+            required: true,
         },
-        country: {
-            type: String,
-            // required: true,
-        },
-        pinCode: {
+        turfPrice: {
             type: Number,
-            // required: true,
+            required: true,
+        },
+        turfLocation: {
+            type: String,
+            required: true,
+        },
+        turfId: {
+            type: mongoose_1.default.Types.ObjectId,
+            ref: "Turf",
+            required: true,
+        },
+        slot: {
+            courtNumber: {
+                type: Number,
+                required: true,
+            },
+            date: {
+                type: Date,
+                required: true,
+            },
+            time: {
+                type: String,
+                required: true,
+            },
         },
     },
+    // bookingInfo: {
+    //   city: {
+    //     type: String,
+    //     // required: true,
+    //   },
+    //   state: {
+    //     type: String,
+    //     // required: true,
+    //   },
+    //   country: {
+    //     type: String,
+    //     // required: true,
+    //   },
+    //   pinCode: {
+    //     type: Number,
+    //     // required: true,
+    //   },
+    // },
     total: {
         type: Number,
         // required: true,

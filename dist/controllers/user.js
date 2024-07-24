@@ -19,6 +19,7 @@ exports.user = (0, error_1.TryCatch)(async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: `Welcome back, ${user?.fullName}`,
+            user,
         });
     }
     //empty field error
@@ -31,6 +32,7 @@ exports.user = (0, error_1.TryCatch)(async (req, res, next) => {
     return res.status(201).json({
         success: true,
         message: `Welcome, ${user?.fullName}`,
+        user,
     });
 });
 exports.getAllUser = (0, error_1.TryCatch)(async (req, res, next) => {

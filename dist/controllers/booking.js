@@ -10,14 +10,21 @@ const features_1 = require("../utils/features");
 const app_1 = require("../app");
 const createBooking = async (req, res, next) => {
     try {
-        const { userId, status, turfInfo, bookingInfo, total } = req.body;
-        if (!userId || !status || !turfInfo || !bookingInfo || !total)
+        // const { userId, status, turfInfo, bookingInfo, total } = req.body;
+        const { userId, status, turfInfo, total } = req.body;
+        // if (!userId || !status || !turfInfo || !bookingInfo || !total)
+        if (!userId || !status || !turfInfo || !total)
             return next(new utility_class_1.default("Please enter all the field", 400));
+        const { turfId, slot } = turfInfo;
+        const { courtNumber, date, time } = slot;
+        if (!turfId || !courtNumber || !date || !time) {
+            return next(new utility_class_1.default("Please provide all turf booking details", 400));
+        }
         const booking = await booking_1.Booking.create({
             userId,
             status,
             turfInfo,
-            bookingInfo,
+            // bookingInfo,
             total,
         });
         await (0, features_1.invalidateCache)({ booking: true });

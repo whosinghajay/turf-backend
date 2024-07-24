@@ -10,6 +10,7 @@ const express_1 = __importDefault(require("express"));
 const node_cache_1 = __importDefault(require("node-cache"));
 const dotenv_1 = require("dotenv");
 const morgan_1 = __importDefault(require("morgan"));
+require("./utils/scheduler.js");
 //importing routes
 const booking_js_1 = __importDefault(require("./routes/booking.js"));
 const turf_js_1 = __importDefault(require("./routes/turf.js"));

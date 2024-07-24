@@ -23,3 +23,23 @@ export type invalidateCacheProps = {
   bookingId?: string | string[];
   admin?: boolean;
 };
+
+
+// court type starts here
+
+interface TimeSlot {
+  time: string; // or Date based on your requirement
+  booked: boolean;
+}
+
+interface Day {
+  date: Date;
+  slots: TimeSlot[];
+}
+
+export interface Court {
+  courtNumber: number;
+  days: Day[];
+}
+
+// court type ends here

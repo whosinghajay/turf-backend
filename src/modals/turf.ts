@@ -1,4 +1,41 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
+
+const timeSlotSchema = new mongoose.Schema(
+  {
+    time: {
+      type: String, // or Date, based on the requirement
+      // required: true,
+    },
+    booked: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { _id: false }
+);
+
+const daySchema = new mongoose.Schema(
+  {
+    date: {
+      type: Date,
+      // required: true,
+    },
+    slots: [timeSlotSchema],
+  },
+  { _id: false }
+);
+
+const courtSchema = new mongoose.Schema(
+  {
+    courtNumber: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    days: [daySchema],
+  },
+  { _id: false }
+);
 
 const turfSchema = new mongoose.Schema(
   {
@@ -26,14 +63,12 @@ const turfSchema = new mongoose.Schema(
     },
     courtNumbers: {
       type: Number,
-      required: [true, "Provide us the number of court you have"],
+      // required: [true, "Provide us the number of court you have"],
     },
-    slot: {
-      type: [Date],
-    },
+    slot: [courtSchema],
     price: {
       type: Number,
-      required: [true, "Provide us price of the turf"],
+      required: [true, "Provide us the price of turf"],
     },
     typeOfCourt: {
       //category

@@ -26,11 +26,51 @@ const createTurf = async (req, res, next) => {
             });
             return next(new utility_class_1.default("Please provide all fields", 400));
         }
+        // Initialize slots
+        const slots = [];
+        for (let i = 1; i <= courtNumbers; i++) {
+            const days = [];
+            for (let j = 0; j < 7; j++) {
+                const date = new Date();
+                date.setDate(date.getDate() + j);
+                days.push({
+                    date,
+                    slots: [
+                        { time: "00:00", booked: false },
+                        { time: "01:00", booked: false },
+                        { time: "02:00", booked: false },
+                        { time: "03:00", booked: false },
+                        { time: "04:00", booked: false },
+                        { time: "05:00", booked: false },
+                        { time: "06:00", booked: false },
+                        { time: "07:00", booked: false },
+                        { time: "08:00", booked: false },
+                        { time: "09:00", booked: false },
+                        { time: "10:00", booked: false },
+                        { time: "11:00", booked: false },
+                        { time: "12:00", booked: false },
+                        { time: "13:00", booked: false },
+                        { time: "14:00", booked: false },
+                        { time: "15:00", booked: false },
+                        { time: "16:00", booked: false },
+                        { time: "17:00", booked: false },
+                        { time: "18:00", booked: false },
+                        { time: "19:00", booked: false },
+                        { time: "20:00", booked: false },
+                        { time: "21:00", booked: false },
+                        { time: "22:00", booked: false },
+                        { time: "23:00", booked: false },
+                    ],
+                });
+            }
+            slots.push({ courtNumber: i, days });
+        }
         let turf = await turf_1.Turf.create({
             image: image.path,
             turfName,
             turfLocation,
             services,
+            slot: slots,
             courtNumbers,
             price,
             typeOfCourt,
@@ -42,7 +82,7 @@ const createTurf = async (req, res, next) => {
         });
     }
     catch (error) {
-        next(error);
+        next(new utility_class_1.default(error.message, 500));
     }
 };
 exports.createTurf = createTurf;
@@ -114,7 +154,7 @@ exports.deleteTurf = deleteTurf;
 const updateTurf = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { turfName, turfLocation, services, courtNumbers, price, typeOfCourt, } = req.body;
+        const { turfName, turfLocation, comments, services, courtNumbers, price, slot, typeOfCourt, } = req.body;
         const image = req.file;
         const turf = await turf_1.Turf.findById(id);
         if (!turf)
@@ -137,6 +177,12 @@ const updateTurf = async (req, res, next) => {
             turf.price = price;
         if (typeOfCourt)
             turf.typeOfCourt = typeOfCourt;
+        // if (slot) turf.slot = slot;
+        if (slot && Array.isArray(slot)) {
+            turf.slot.push(...slot);
+        }
+        if (comments)
+            turf.comments = comments;
         await turf.save();
         await (0, features_1.invalidateCache)({ turf: true, turfId: String(turf._id) });
         return res.status(201).json({

@@ -38,11 +38,52 @@ export const createTurf = async (
       return next(new ErrorHandler("Please provide all fields", 400));
     }
 
+    // Initialize slots
+    const slots = [];
+    for (let i = 1; i <= courtNumbers; i++) {
+      const days = [];
+      for (let j = 0; j < 7; j++) {
+        const date = new Date();
+        date.setDate(date.getDate() + j);
+        days.push({
+          date,
+          slots: [
+            { time: "00:00", booked: false },
+            { time: "01:00", booked: false },
+            { time: "02:00", booked: false },
+            { time: "03:00", booked: false },
+            { time: "04:00", booked: false },
+            { time: "05:00", booked: false },
+            { time: "06:00", booked: false },
+            { time: "07:00", booked: false },
+            { time: "08:00", booked: false },
+            { time: "09:00", booked: false },
+            { time: "10:00", booked: false },
+            { time: "11:00", booked: false },
+            { time: "12:00", booked: false },
+            { time: "13:00", booked: false },
+            { time: "14:00", booked: false },
+            { time: "15:00", booked: false },
+            { time: "16:00", booked: false },
+            { time: "17:00", booked: false },
+            { time: "18:00", booked: false },
+            { time: "19:00", booked: false },
+            { time: "20:00", booked: false },
+            { time: "21:00", booked: false },
+            { time: "22:00", booked: false },
+            { time: "23:00", booked: false },
+          ],
+        });
+      }
+      slots.push({ courtNumber: i, days });
+    }
+
     let turf = await Turf.create({
       image: image.path,
       turfName,
       turfLocation,
       services,
+      slot: slots,
       courtNumbers,
       price,
       typeOfCourt,
@@ -55,7 +96,7 @@ export const createTurf = async (
       turf,
     });
   } catch (error) {
-    next(error);
+    next(new ErrorHandler((error as Error).message, 500));
   }
 };
 
@@ -150,9 +191,11 @@ export const updateTurf = async (
     const {
       turfName,
       turfLocation,
+      comments,
       services,
       courtNumbers,
       price,
+      slot,
       typeOfCourt,
     } = req.body;
 
@@ -174,6 +217,11 @@ export const updateTurf = async (
     if (courtNumbers) turf.courtNumbers = courtNumbers;
     if (price) turf.price = price;
     if (typeOfCourt) turf.typeOfCourt = typeOfCourt;
+    // if (slot) turf.slot = slot;
+    if (slot && Array.isArray(slot)) {
+      turf.slot.push(...slot);
+    }
+    if (comments) turf.comments = comments;
 
     await turf.save();
 

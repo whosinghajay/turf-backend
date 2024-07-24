@@ -10,16 +10,27 @@ export const createBooking = async (
   next: NextFunction
 ) => {
   try {
-    const { userId, status, turfInfo, bookingInfo, total } = req.body;
+    // const { userId, status, turfInfo, bookingInfo, total } = req.body;
+    const { userId, status, turfInfo, total } = req.body;
 
-    if (!userId || !status || !turfInfo || !bookingInfo || !total)
+    // if (!userId || !status || !turfInfo || !bookingInfo || !total)
+    if (!userId || !status || !turfInfo || !total)
       return next(new ErrorHandler("Please enter all the field", 400));
+
+    const { turfId, slot } = turfInfo;
+    const { courtNumber, date, time } = slot;
+
+    if (!turfId || !courtNumber || !date || !time) {
+      return next(
+        new ErrorHandler("Please provide all turf booking details", 400)
+      );
+    }
 
     const booking = await Booking.create({
       userId,
       status,
       turfInfo,
-      bookingInfo,
+      // bookingInfo,
       total,
     });
 
