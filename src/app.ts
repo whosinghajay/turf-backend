@@ -17,7 +17,7 @@ import { connectDB } from "./utils/features.js";
 
 config({
   path: "./.env",
-}); 
+});
 
 const port = process.env.PORT || 3000;
 
