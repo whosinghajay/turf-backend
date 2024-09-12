@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { TryCatch } from "../middlewares/error";
-import { User } from "../modals/user";
-import { NewUserRequestBody } from "../types/types";
-import ErrorHandler from "../utils/utility-class";
-import { myCache } from "../app";
-import { invalidateCache } from "../utils/features";
+import { TryCatch } from "../middlewares/error.js";
+import { User } from "../modals/user.js";
+import { NewUserRequestBody } from "../types/types.js";
+import ErrorHandler from "../utils/utility-class.js";
+import { myCache } from "../app.js";
+import { invalidateCache } from "../utils/features.js";
 
 export const user = TryCatch(
   async (

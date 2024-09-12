@@ -17,7 +17,7 @@ const timeSlotSchema = new mongoose.Schema(
 const daySchema = new mongoose.Schema(
   {
     date: {
-      type: Date,
+      type: String,
       // required: true,
     },
     slots: [timeSlotSchema],
@@ -39,6 +39,11 @@ const courtSchema = new mongoose.Schema(
 
 const turfSchema = new mongoose.Schema(
   {
+    turfId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     image: {
       type: String,
       required: [true, "Please provide turf image"],

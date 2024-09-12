@@ -5,8 +5,9 @@ import {
   createBooking,
   getAllBooking,
   getBooking,
-} from "../controllers/booking";
-import { userOnly } from "../middlewares/auth";
+  updateBooking,
+} from "../controllers/booking.js";
+import { userOnly } from "../middlewares/auth.js";
 
 const app = express.Router();
 
@@ -15,5 +16,6 @@ app.delete("/:id", cancelBooking);
 // app.put("/:id", userOnly, changeTime);
 app.get("/all", getAllBooking);
 app.get("/:id", getBooking);
+app.put('/:id', updateBooking);
 
 export default app;

@@ -4,17 +4,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPieCharts = exports.getDashboardStats = void 0;
-const app_1 = require("../app");
-const utility_class_1 = __importDefault(require("../utils/utility-class"));
-const turf_1 = require("../modals/turf");
-const user_1 = require("../modals/user");
-const booking_1 = require("../modals/booking");
-const features_1 = require("../utils/features");
+const app_js_1 = require("../app.js");
+const utility_class_js_1 = __importDefault(require("../utils/utility-class.js"));
+const turf_js_1 = require("../modals/turf.js");
+const user_js_1 = require("../modals/user.js");
+const booking_js_1 = require("../modals/booking.js");
+const features_js_1 = require("../utils/features.js");
 const getDashboardStats = async (req, res, next) => {
     let stats;
     try {
-        if (app_1.myCache.has("admin-stats")) {
-            stats = JSON.parse(app_1.myCache.get("admin-stats"));
+        if (app_js_1.myCache.has("admin-stats")) {
+            stats = JSON.parse(app_js_1.myCache.get("admin-stats"));
         }
         else {
             const today = new Date();
@@ -28,49 +28,49 @@ const getDashboardStats = async (req, res, next) => {
                 start: new Date(today.getDate(), today.getMonth() - 1, 1),
                 end: new Date(today.getDate(), today.getMonth(), 0),
             };
-            const thisMonthTurvesPromise = turf_1.Turf.find({
+            const thisMonthTurvesPromise = turf_js_1.Turf.find({
                 createdAt: {
                     $gte: thisMonth.start,
                     $lte: thisMonth.end,
                 },
             });
-            const lastMonthTurvesPromise = turf_1.Turf.find({
+            const lastMonthTurvesPromise = turf_js_1.Turf.find({
                 createdAt: {
                     $gte: lastMonth.start,
                     $lte: lastMonth.end,
                 },
             });
-            const thisMonthUsersPromise = user_1.User.find({
+            const thisMonthUsersPromise = user_js_1.User.find({
                 createdAt: {
                     $gte: thisMonth.start,
                     $lte: thisMonth.end,
                 },
             });
-            const lastMonthUsersPromise = user_1.User.find({
+            const lastMonthUsersPromise = user_js_1.User.find({
                 createdAt: {
                     $gte: lastMonth.start,
                     $lte: lastMonth.end,
                 },
             });
-            const thisMonthBookingsPromise = booking_1.Booking.find({
+            const thisMonthBookingsPromise = booking_js_1.Booking.find({
                 createdAt: {
                     $gte: thisMonth.start,
                     $lte: thisMonth.end,
                 },
             });
-            const lastMonthBookingsPromise = booking_1.Booking.find({
+            const lastMonthBookingsPromise = booking_js_1.Booking.find({
                 createdAt: {
                     $gte: lastMonth.start,
                     $lte: lastMonth.end,
                 },
             });
-            const lastSixMonthBookingsPromise = booking_1.Booking.find({
+            const lastSixMonthBookingsPromise = booking_js_1.Booking.find({
                 createdAt: {
                     $gte: sixMonthAgo,
                     $lte: today,
                 },
             });
-            const latestTransactionPromise = booking_1.Booking.find({})
+            const latestTransactionPromise = booking_js_1.Booking.find({})
                 .limit(4)
                 .select(["turfInfo", "total", "status"]);
             const [thisMonthTurves, thisMonthUsers, thisMonthBookings, lastMonthTurves, lastMonthUsers, lastMonthBookings, usersCount, turvesCount, allBookings, lastSixMonthBookings, categories, maleUsers, latestTransaction,] = await Promise.all([
@@ -80,21 +80,21 @@ const getDashboardStats = async (req, res, next) => {
                 lastMonthTurvesPromise,
                 lastMonthUsersPromise,
                 lastMonthBookingsPromise,
-                user_1.User.countDocuments(),
-                turf_1.Turf.countDocuments(),
-                booking_1.Booking.find({}).select("total"),
+                user_js_1.User.countDocuments(),
+                turf_js_1.Turf.countDocuments(),
+                booking_js_1.Booking.find({}).select("total"),
                 lastSixMonthBookingsPromise,
-                turf_1.Turf.distinct("typeOfCourt"),
-                user_1.User.countDocuments({ gender: "male" }),
+                turf_js_1.Turf.distinct("typeOfCourt"),
+                user_js_1.User.countDocuments({ gender: "male" }),
                 latestTransactionPromise,
             ]);
             const thisMonthRevenue = thisMonthBookings.reduce((total, booking) => total + (booking.total || 0), 0);
             const lastMonthRevenue = lastMonthBookings.reduce((total, booking) => total + (booking.total || 0), 0);
             const changePercent = {
-                revenue: (0, features_1.calculatePercentage)(thisMonthRevenue, lastMonthRevenue),
-                user: (0, features_1.calculatePercentage)(thisMonthUsers.length, lastMonthUsers.length),
-                turf: (0, features_1.calculatePercentage)(thisMonthTurves.length, lastMonthTurves.length),
-                booking: (0, features_1.calculatePercentage)(thisMonthBookings.length, lastMonthBookings.length),
+                revenue: (0, features_js_1.calculatePercentage)(thisMonthRevenue, lastMonthRevenue),
+                user: (0, features_js_1.calculatePercentage)(thisMonthUsers.length, lastMonthUsers.length),
+                turf: (0, features_js_1.calculatePercentage)(thisMonthTurves.length, lastMonthTurves.length),
+                booking: (0, features_js_1.calculatePercentage)(thisMonthBookings.length, lastMonthBookings.length),
             };
             const revenue = allBookings.reduce((total, booking) => total + (booking.total || 0), 0);
             const count = {
@@ -114,7 +114,7 @@ const getDashboardStats = async (req, res, next) => {
                     bookingMonthRevenue[6 - monthDiff - 1] += booking.total;
                 }
             });
-            const categoryCount = await (0, features_1.getInventories)({
+            const categoryCount = await (0, features_js_1.getInventories)({
                 categories,
                 turvesCount,
             });
@@ -133,7 +133,7 @@ const getDashboardStats = async (req, res, next) => {
                 userRatio,
                 latestTransaction,
             };
-            app_1.myCache.set("admin-stats", JSON.stringify(stats));
+            app_js_1.myCache.set("admin-stats", JSON.stringify(stats));
         }
         return res.status(200).json({
             success: true,
@@ -141,30 +141,30 @@ const getDashboardStats = async (req, res, next) => {
         });
     }
     catch (error) {
-        next(utility_class_1.default);
+        next(utility_class_js_1.default);
     }
 };
 exports.getDashboardStats = getDashboardStats;
 const getPieCharts = async (req, res, next) => {
     try {
         let charts;
-        if (app_1.myCache.has("admin-pie-charts")) {
-            charts = JSON.parse(app_1.myCache.get("admin-pie-charts"));
+        if (app_js_1.myCache.has("admin-pie-charts")) {
+            charts = JSON.parse(app_js_1.myCache.get("admin-pie-charts"));
         }
         else {
             const [processing, booked, canceled, categories, turvesCount] = await Promise.all([
-                booking_1.Booking.countDocuments({ status: "processing" }),
-                booking_1.Booking.countDocuments({ status: "booked" }),
-                booking_1.Booking.countDocuments({ status: "canceled" }),
-                turf_1.Turf.distinct("typeOfCourt"),
-                turf_1.Turf.countDocuments(),
+                booking_js_1.Booking.countDocuments({ status: "processing" }),
+                booking_js_1.Booking.countDocuments({ status: "booked" }),
+                booking_js_1.Booking.countDocuments({ status: "canceled" }),
+                turf_js_1.Turf.distinct("typeOfCourt"),
+                turf_js_1.Turf.countDocuments(),
             ]);
             const bookingFullfillment = {
                 processing,
                 booked,
                 canceled,
             };
-            const turvesCategories = await (0, features_1.getInventories)({
+            const turvesCategories = await (0, features_js_1.getInventories)({
                 categories,
                 turvesCount,
             });
@@ -172,7 +172,7 @@ const getPieCharts = async (req, res, next) => {
                 bookingFullfillment,
                 turvesCategories,
             };
-            app_1.myCache.set("admin-pie-charts", JSON.stringify(charts));
+            app_js_1.myCache.set("admin-pie-charts", JSON.stringify(charts));
         }
         return res.status(200).json({
             success: true,
@@ -180,7 +180,7 @@ const getPieCharts = async (req, res, next) => {
         });
     }
     catch (error) {
-        next(utility_class_1.default);
+        next(utility_class_js_1.default);
     }
 };
 exports.getPieCharts = getPieCharts;

@@ -1,6 +1,6 @@
 import express from "express";
-import { getDashboardStats, getPieCharts } from "../controllers/stats";
-import { adminOnly } from "../middlewares/auth";
+import { getDashboardStats, getPieCharts } from "../controllers/stats.js";
+import { adminOnly } from "../middlewares/auth.js";
 
 const app = express.Router();
 

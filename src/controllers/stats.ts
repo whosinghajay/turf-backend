@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { myCache } from "../app";
-import ErrorHandler from "../utils/utility-class";
-import { Turf } from "../modals/turf";
-import { User } from "../modals/user";
-import { Booking } from "../modals/booking";
-import { calculatePercentage, getInventories } from "../utils/features";
+import { myCache } from "../app.js";
+import ErrorHandler from "../utils/utility-class.js";
+import { Turf } from "../modals/turf.js";
+import { User } from "../modals/user.js";
+import { Booking } from "../modals/booking.js";
+import { calculatePercentage, getInventories } from "../utils/features.js";
 
 export const getDashboardStats = async (
   req: Request,

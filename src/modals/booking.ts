@@ -38,20 +38,28 @@ const bookingSchema = new mongoose.Schema(
         ref: "Turf",
         required: true,
       },
-      slot: {
-        courtNumber: {
-          type: Number,
-          required: true,
+      slot: [
+        {
+          courtNumber: {
+            type: Number,
+            required: true,
+          },
+          date: {
+            // type: Date,
+            type: String,
+            required: true,
+          },
+          time: {
+            type: String,
+            required: true,
+          },
+          booked: {
+            type: Boolean,
+            default: false,
+            required: true,
+          },
         },
-        date: {
-          type: Date,
-          required: true,
-        },
-        time: {
-          type: String,
-          required: true,
-        },
-      },
+      ],
     },
     // bookingInfo: {
     //   city: {
@@ -73,7 +81,7 @@ const bookingSchema = new mongoose.Schema(
     // },
     total: {
       type: Number,
-      // required: true,
+      required: true,
     },
   },
   { timestamps: true }

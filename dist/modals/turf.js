@@ -17,7 +17,7 @@ const timeSlotSchema = new mongoose_1.default.Schema({
 }, { _id: false });
 const daySchema = new mongoose_1.default.Schema({
     date: {
-        type: Date,
+        type: String,
         // required: true,
     },
     slots: [timeSlotSchema],
@@ -31,6 +31,11 @@ const courtSchema = new mongoose_1.default.Schema({
     days: [daySchema],
 }, { _id: false });
 const turfSchema = new mongoose_1.default.Schema({
+    turfId: {
+        type: mongoose_1.default.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     image: {
         type: String,
         required: [true, "Please provide turf image"],

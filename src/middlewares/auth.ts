@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "../modals/user";
-import ErrorHandler from "../utils/utility-class";
+import { User } from "../modals/user.js";
+import ErrorHandler from "../utils/utility-class.js";
 
 export const adminOnly = async (
   req: Request,

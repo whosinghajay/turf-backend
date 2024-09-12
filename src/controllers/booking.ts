@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import ErrorHandler from "../utils/utility-class";
-import { Booking } from "../modals/booking";
-import { invalidateCache } from "../utils/features";
-import { myCache } from "../app";
+import ErrorHandler from "../utils/utility-class.js";
+import { Booking } from "../modals/booking.js";
+import { invalidateCache } from "../utils/features.js";
+import { myCache } from "../app.js";
 
 export const createBooking = async (
   req: Request,
@@ -17,13 +17,29 @@ export const createBooking = async (
     if (!userId || !status || !turfInfo || !total)
       return next(new ErrorHandler("Please enter all the field", 400));
 
-    const { turfId, slot } = turfInfo;
-    const { courtNumber, date, time } = slot;
+    // const { turfId, slot } = turfInfo;
+    // const { courtNumber, date, time } = slot;
 
-    if (!turfId || !courtNumber || !date || !time) {
+    // if (!turfId || !courtNumber || !date || !time) {
+    //   return next(
+    //     new ErrorHandler("Please provide all turf booking details", 400)
+    //   );
+    // }
+
+    const { turfId, slot } = turfInfo;
+
+    if (!turfId || !Array.isArray(slot) || slot.length === 0) {
       return next(
         new ErrorHandler("Please provide all turf booking details", 400)
       );
+    }
+
+    // Check each slot for required fields
+    for (const s of slot) {
+      const { courtNumber, date, time } = s;
+      if (!courtNumber || !date || !time) {
+        return next(new ErrorHandler("Please provide all slot details", 400));
+      }
     }
 
     const booking = await Booking.create({
@@ -42,7 +58,7 @@ export const createBooking = async (
       booking,
     });
   } catch (error) {
-    next(ErrorHandler);
+    next(new ErrorHandler((error as Error).message || "Server Error", 500));
   }
 };
 
@@ -181,3 +197,5 @@ export const getAllBooking = async (
 //   },
 //   "total": 55
 // }
+
+export const updateBooking = () => {};

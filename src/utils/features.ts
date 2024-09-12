@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-import { invalidateCacheProps } from "../types/types";
-import { myCache } from "../app";
-import { Turf } from "../modals/turf";
+import { invalidateCacheProps } from "../types/types.js";
+import { myCache } from "../app.js";
+import { Turf } from "../modals/turf.js";
 
 export const connectDB = () => {
   mongoose

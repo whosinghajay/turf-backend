@@ -8,8 +8,8 @@ import {
   getlatestTurf,
   updateTurf,
 } from "../controllers/turf";
-import { singleUpload } from "../middlewares/multer";
-import { adminOnly, turfPosterOnly } from "../middlewares/auth";
+import { singleUpload } from "../middlewares/multer.js";
+import { adminOnly, turfPosterOnly } from "../middlewares/auth.js";
 
 const app = express.Router();
 

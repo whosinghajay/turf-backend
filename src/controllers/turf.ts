@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { rm } from "fs";
-import { Turf } from "../modals/turf";
-import ErrorHandler from "../utils/utility-class";
-import { myCache } from "../app";
-import { invalidateCache } from "../utils/features";
+import { Turf } from "../modals/turf.js";
+import ErrorHandler from "../utils/utility-class.js";
+import { myCache } from "../app.js";
+import { invalidateCache } from "../utils/features.js";
 
 export const createTurf = async (
   req: Request,
@@ -18,6 +18,7 @@ export const createTurf = async (
       courtNumbers,
       price,
       typeOfCourt,
+      turfId,
     } = req.body;
 
     const image = req.file;
@@ -30,7 +31,8 @@ export const createTurf = async (
       !services ||
       !courtNumbers ||
       !price ||
-      !typeOfCourt
+      !typeOfCourt ||
+      !turfId
     ) {
       rm(image.path, () => {
         console.log("Deleted");
@@ -45,8 +47,9 @@ export const createTurf = async (
       for (let j = 0; j < 7; j++) {
         const date = new Date();
         date.setDate(date.getDate() + j);
+        const formattedDate = date.toISOString().split("T")[0];
         days.push({
-          date,
+          date: formattedDate,
           slots: [
             { time: "00:00", booked: false },
             { time: "01:00", booked: false },
@@ -77,6 +80,7 @@ export const createTurf = async (
       }
       slots.push({ courtNumber: i, days });
     }
+    // console.log(slots);
 
     let turf = await Turf.create({
       image: image.path,
@@ -87,6 +91,7 @@ export const createTurf = async (
       courtNumbers,
       price,
       typeOfCourt,
+      turfId,
     });
 
     await invalidateCache({ turf: true });
@@ -218,10 +223,38 @@ export const updateTurf = async (
     if (price) turf.price = price;
     if (typeOfCourt) turf.typeOfCourt = typeOfCourt;
     // if (slot) turf.slot = slot;
-    if (slot && Array.isArray(slot)) {
-      turf.slot.push(...slot);
-    }
+    // if (slot && Array.isArray(slot)) {
+    //   turf.slot.push(...slot);
+    // }
     if (comments) turf.comments = comments;
+
+    if (slot && Array.isArray(slot)) {
+      slot.forEach((update) => {
+        const { courtNumber, date, time, booked } = update;
+
+        // Find the court
+        const court = turf.slot.find(
+          (court) => court.courtNumber === courtNumber
+        );
+        if (court) {
+          // Find the day
+          const day = court.days.find(
+            (day) =>
+              day.date &&
+              // new Date(day.date).toISOString() === new Date(date).toISOString()
+              day.date === date
+          );
+          if (day) {
+            // Find the time slot
+            const timeSlot = day.slots.find((slot) => slot.time === time);
+            if (timeSlot) {
+              // Update the booking status
+              timeSlot.booked = booked;
+            }
+          }
+        }
+      });
+    }
 
     await turf.save();
 
@@ -233,7 +266,7 @@ export const updateTurf = async (
       turf,
     });
   } catch (error) {
-    next(ErrorHandler);
+    next(new ErrorHandler((error as Error).message, 500));
   }
 };
 
@@ -275,3 +308,33 @@ export const getlatestTurf = async (
     next(ErrorHandler);
   }
 };
+
+//update slot json data type for api testing
+// {
+//   "slot": [
+//     {
+//       "courtNumber": 1,
+//       "date": "2024-07-26T05:35:32.401+00:00",
+//       "time": "00:00",
+//       "booked": true
+//     }
+//   ]
+// }
+
+// {
+//   "userId": "669a37d4f22023f36c886f54",
+//   "status": "processing",
+//   "turfInfo": {
+//     "turfName": "A1 Turf",
+//     "turfPhoto": "uploads\\6f3eaa8a-2311-487f-a46c-56bfda8054.png",
+//     "turfPrice": 1234,
+//     "turfLocation":"lcoation locationloicatoin location",
+//     "turfId": "66a1e424877c078d7297ad30",
+//     "slot": {
+//       "courtNumber": 1,
+//       "date": "1970-01-01T00:00:12.222+00:00",
+//       "time": "00:00"
+//     }
+//   },
+//   "total": 1000
+// }
