@@ -11,6 +11,7 @@ import booking from "./routes/booking.js";
 import turf from "./routes/turf.js";
 import user from "./routes/user.js";
 import dashboard from "./routes/stats.js";
+import otp from './routes/otp.js';
 
 import { errorMiddleware } from "./middlewares/error.js";
 import { connectDB } from "./utils/features.js";
@@ -41,6 +42,7 @@ app.use("/api/v1/user", user);
 app.use("/api/v1/turf", turf);
 app.use("/api/v1/booking", booking);
 app.use("/api/v1/dashboard", dashboard);
+app.use("/api/v1/otp", otp);
 
 //used this middleware for multer
 app.use("/uploads", express.static("uploads"));

@@ -1,0 +1,29 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendOTP = exports.generateOTP = void 0;
+const axios_1 = __importDefault(require("axios"));
+const SMSINDORI_USERNAME = process.env.SMSINDORI_USERNAME;
+const SMSINDORI_PASSWORD = process.env.SMSINDORI_PASSWORD;
+const SMSINDORI_SENDER_ID = process.env.SMSINDORI_SENDER_ID;
+// To Generate a 4-digit OTP
+const generateOTP = () => {
+    return Math.floor(1000 + Math.random() * 9000).toString();
+};
+exports.generateOTP = generateOTP;
+const sendOTP = async (phoneNumber, otp) => {
+    //   const message = `Your OTP is: ${otp}`;
+    console.log(phoneNumber, "number");
+    console.log(otp, "otp");
+    const url = `http://sms.smsindori.com/http-api.php?username=${SMSINDORI_USERNAME}&password=${SMSINDORI_PASSWORD}&senderid=${SMSINDORI_SENDER_ID}&route=06&number=${phoneNumber}&message=${otp} is your Login otp for ChatHooter IMRSMS&templateid=1207167594991592693`;
+    try {
+        const response = await axios_1.default.get(url);
+        return response.data;
+    }
+    catch (error) {
+        throw new Error("Failed to send OTP");
+    }
+};
+exports.sendOTP = sendOTP;

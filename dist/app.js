@@ -16,6 +16,7 @@ const booking_js_1 = __importDefault(require("./routes/booking.js"));
 const turf_js_1 = __importDefault(require("./routes/turf.js"));
 const user_js_1 = __importDefault(require("./routes/user.js"));
 const stats_js_1 = __importDefault(require("./routes/stats.js"));
+const otp_js_1 = __importDefault(require("./routes/otp.js"));
 const error_js_1 = require("./middlewares/error.js");
 const features_js_1 = require("./utils/features.js");
 (0, dotenv_1.config)({
@@ -37,6 +38,7 @@ app.use("/api/v1/user", user_js_1.default);
 app.use("/api/v1/turf", turf_js_1.default);
 app.use("/api/v1/booking", booking_js_1.default);
 app.use("/api/v1/dashboard", stats_js_1.default);
+app.use("/api/v1/otp", otp_js_1.default);
 //used this middleware for multer
 app.use("/uploads", express_1.default.static("uploads"));
 //error middleware
