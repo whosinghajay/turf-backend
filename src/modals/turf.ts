@@ -29,8 +29,7 @@ const courtSchema = new mongoose.Schema(
   {
     courtNumber: {
       type: Number,
-      required: true,
-      unique: true,
+      // required: true,
     },
     days: [daySchema],
   },
@@ -68,7 +67,7 @@ const turfSchema = new mongoose.Schema(
     },
     courtNumbers: {
       type: Number,
-      // required: [true, "Provide us the number of court you have"],
+      required: [true, "Provide us the number of court you have"],
     },
     slot: [courtSchema],
     price: {

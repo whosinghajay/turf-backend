@@ -25,8 +25,7 @@ const daySchema = new mongoose_1.default.Schema({
 const courtSchema = new mongoose_1.default.Schema({
     courtNumber: {
         type: Number,
-        required: true,
-        unique: true,
+        // required: true,
     },
     days: [daySchema],
 }, { _id: false });
@@ -60,7 +59,7 @@ const turfSchema = new mongoose_1.default.Schema({
     },
     courtNumbers: {
         type: Number,
-        // required: [true, "Provide us the number of court you have"],
+        required: [true, "Provide us the number of court you have"],
     },
     slot: [courtSchema],
     price: {
