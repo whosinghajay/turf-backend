@@ -33,7 +33,7 @@ interface TimeSlot {
 }
 
 interface Day {
-  date: Date;
+  date: String;
   slots: TimeSlot[];
 }
 

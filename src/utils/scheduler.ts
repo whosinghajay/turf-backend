@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { Turf } from "../modals/turf.js"; // Adjust the path as needed
+import { Turf } from "../modals/turf.js";
 import { Court } from "../types/types.js";
 
 // Function to add new day slots to a turf
@@ -8,8 +8,10 @@ const addNewDaySlots = async (turf: any, numberOfDays: number) => {
   const newDate = new Date(today);
   newDate.setDate(today.getDate() + numberOfDays);
 
+  const formattedDate = newDate.toISOString().split("T")[0];
+
   const newSlots = {
-    date: newDate,
+    date: formattedDate,
     slots: [
       { time: "00:00", booked: false },
       { time: "01:00", booked: false },
@@ -39,7 +41,7 @@ const addNewDaySlots = async (turf: any, numberOfDays: number) => {
   };
 
   turf.slot.forEach((court: Court) => {
-    // Remove the first day (yesterday) and add new day slots
+    // Removing the first day (yesterday) and add new day slots
     court.days.shift();
     court.days.push(newSlots);
   });
@@ -48,16 +50,38 @@ const addNewDaySlots = async (turf: any, numberOfDays: number) => {
   console.log(`Updated slots for Turf ID: ${turf._id}`);
 };
 
-// Schedule the task to run at midnight
+// Scheduling the task to run at midnight
 cron.schedule("0 0 * * *", async () => {
   console.log("Running scheduled task to update turf slots");
   try {
     const turfs = await Turf.find();
 
     for (const turf of turfs) {
-      await addNewDaySlots(turf, 7); // Adjust number of days as per your requirement
+      await addNewDaySlots(turf, 7-1);
     }
   } catch (error) {
     console.error("Error updating turf slots:", error);
   }
 });
+
+const initializeTurfSlots = async () => {
+  console.log("Checking and updating turf slots on server start");
+  const turfs = await Turf.find(); 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Resetting to start of the day
+
+
+  for (const turf of turfs) {
+    // Checking the last updated date and update accordingly
+    const lastUpdated = turf.updatedAt; // It will get the last updated date from turf data
+    lastUpdated.setHours(0, 0, 0, 0); // Resetting to start of the day
+    const daysDifference =
+      (today.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60 * 24);
+
+    for (let i = 0; i < daysDifference; i++) {
+      await addNewDaySlots(turf, 7 - 1 - daysDifference + i + 1);
+    }
+  }
+};
+
+initializeTurfSlots();
