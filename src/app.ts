@@ -5,6 +5,7 @@ import NodeCache from "node-cache";
 import { config } from "dotenv";
 import morgan from "morgan";
 import "./utils/scheduler.js"
+import "./utils/serverAwake.js"
 
 //importing routes
 import booking from "./routes/booking.js";
